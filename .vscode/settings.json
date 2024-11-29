@@ -1,0 +1,9 @@
+{
+    "editor.formatOnSave": true,
+    "editor.quickSuggestions": {
+        "other": true,
+        "comments": false,
+        "strings": false
+    },
+    "editor.tabCompletion": "on",
+}
