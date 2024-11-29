@@ -22,16 +22,20 @@ export class RssService {
       title: feed.title,
       description: feed.description,
       link: feed.link,
-      items: feed.items.map((item) => ({
-        title: item.title,
-        link: item.link,
-        pubDate: item.pubDate,
-        content: item['content:encoded'],
-        description: item['content:encodedSnippet'],
-        guid: item.guid,
-        categories: item.categories,
-        author: item.creator,
-      })),
+      items: feed.items.map((item) => {
+        const imageMatch = item['content:encoded'].match(/<img.*?src="(.*?)"/);
+        return {
+          title: item.title,
+          link: item.link,
+          pubDate: item.pubDate,
+          content: item['content:encoded'],
+          description: item['content:encodedSnippet'],
+          guid: item.guid,
+          thumbnail: imageMatch ? imageMatch[1] : null,
+          categories: item.categories,
+          author: item.creator,
+        };
+      }),
     };
   }
 
