@@ -4,7 +4,7 @@ import { Request, Response, NextFunction } from 'express';
 @Injectable()
 export class DomainRestrictionMiddleware implements NestMiddleware {
   use(req: Request, res: Response, next: NextFunction) {
-    const allowedDomain = ['dibe.sh', 'localhost'];
+    const allowedDomain = ['dibe.sh', 'localhost', 'rss.dibe.sh'];
     if (!allowedDomain.includes(req.hostname)) {
       return res.status(403).send('Forbidden');
     }
