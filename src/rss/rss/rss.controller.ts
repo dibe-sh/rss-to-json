@@ -10,7 +10,11 @@ export class RssController {
     @Query('url') url: string,
     @Query('page') page = '1',
     @Query('limit') limit = '10',
+    @Query('no-pagination') noPagination = 'false',
   ): Promise<any> {
+    if (noPagination === 'true') {
+      return this.rssService.parseRssFeed(url);
+    }
     return this.rssService.parseRssFeedWithPagination(
       url,
       parseInt(page, 10),
