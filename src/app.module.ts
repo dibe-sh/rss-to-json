@@ -1,8 +1,9 @@
-import { Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { RssModule } from './rss/rss.module';
 import { CacheModule } from '@nestjs/cache-manager';
+import { DomainRestrictionMiddleware } from './middleware/domain-restriction.middleware';
 
 @Module({
   imports: [
@@ -16,4 +17,8 @@ import { CacheModule } from '@nestjs/cache-manager';
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule {}
+export class AppModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer.apply(DomainRestrictionMiddleware).forRoutes('*');
+  }
+}
