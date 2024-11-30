@@ -23,7 +23,8 @@ export class RssService {
       description: feed.description,
       link: feed.link,
       items: feed.items.map((item) => {
-        const imageMatch = item['content:encoded'].match(/<img.*?src="(.*?)"/);
+        const imageMatch =
+          item?.['content:encoded']?.match(/<img.*?src="(.*?)"/);
         return {
           title: item.title,
           link: item.link,
