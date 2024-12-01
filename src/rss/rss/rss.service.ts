@@ -42,8 +42,20 @@ export class RssService {
 
   async parseRssFeed(url: string): Promise<any> {
     try {
-      const cachedFeed = await this.cacheManager.get(url);
+      const cachedFeed = (await this.cacheManager.get(url)) as any;
       if (cachedFeed) {
+        const isContentPresent = cachedFeed?.items?.every((item) =>
+          item.content ? true : false,
+        );
+
+        if (isContentPresent) {
+          this.logger.log(`Using cached feed for URL: ${url}`);
+          return cachedFeed;
+        }
+
+        this.logger.warn(
+          `Cached feed is incomplete for URL: ${url}. Fetching fresh feed.`,
+        );
         this.logger.log(`Fetching feed from cache for URL: ${url}`);
         return this.transformFeed(cachedFeed);
       }
