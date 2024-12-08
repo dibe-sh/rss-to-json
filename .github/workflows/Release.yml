@@ -31,14 +31,15 @@ jobs:
       - name: Build Backend
         run: yarn build
 
-      - name: Prepare Package for Deployment
+      - name: Copy Dependencies to dist
         run: |
-          mkdir -p deploy
-          cp -R dist deploy/
+          cp -R node_modules dist/
+          cp package.json dist/
+          cp yarn.lock dist/
 
       - name: Create Deployment Package
         run: |
-          cd deploy
+          cd dist
           zip -r ../release.zip ./*
 
       - name: Upload Artifact for Deployment Job
@@ -60,7 +61,7 @@ jobs:
           path: ./
 
       - name: Unzip Artifact for Deployment
-        run: unzip release.zip -d ./deploy
+        run: unzip release.zip -d .
 
       - name: Login to Azure
         uses: azure/login@v1
@@ -73,4 +74,4 @@ jobs:
         with:
           app-name: 'rss-app'
           resource-group-name: 'dibe.sh'
-          package: './deploy'
+          package: '.'
