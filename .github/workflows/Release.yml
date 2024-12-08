@@ -68,6 +68,17 @@ jobs:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
           allow-no-subscriptions: true
 
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '20'
+          cache: 'yarn'
+
+      - name: Install Production Dependencies on Azure
+        run: |
+          cd .
+          yarn install --production
+
       - name: Deploy to Azure Web App
         uses: azure/webapps-deploy@v2
         with:
