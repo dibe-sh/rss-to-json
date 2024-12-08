@@ -68,12 +68,10 @@ jobs:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
           allow-no-subscriptions: true
 
-      - name: Install Dependencies on Server
-        run: yarn install --production
-
       - name: Deploy to Azure Web App
         uses: azure/webapps-deploy@v2
         with:
           app-name: 'rss-app'
           resource-group-name: 'dibe.sh'
           package: '.'
+          slot-name: 'production'
