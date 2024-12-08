@@ -1,0 +1,76 @@
+name: RSS Release
+
+on:
+  push:
+    branches:
+      - main
+      - 'refs/tags/v*'
+      - 'refs/tags/v*-alpha'
+      - 'refs/tags/v*-beta'
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  build_and_deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '20'
+          cache: 'yarn'
+
+      - name: Install Dependencies
+        run: yarn install --frozen-lockfile
+
+      - name: Build Backend
+        run: yarn build
+
+      - name: Prepare Package for Deployment
+        run: |
+          mkdir -p deploy
+          cp -R dist deploy/
+
+      - name: Create Deployment Package
+        run: |
+          cd deploy
+          zip -r ../release.zip ./*
+
+      - name: Upload Artifact for Deployment Job
+        uses: actions/upload-artifact@v3
+        with:
+          name: rss-app
+          path: release.zip
+
+  deploy:
+    needs: build_and_deploy
+    runs-on: ubuntu-latest
+    environment:
+      name: 'production'
+    steps:
+      - name: Download Artifact from Build Job
+        uses: actions/download-artifact@v3
+        with:
+          name: rss-app
+          path: ./
+
+      - name: Unzip Artifact for Deployment
+        run: unzip release.zip -d ./deploy
+
+      - name: Login to Azure
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+          allow-no-subscriptions: true
+
+      - name: Deploy to Azure Web App
+        uses: azure/webapps-deploy@v2
+        with:
+          app-name: 'rss-app'
+          resource-group-name: 'dibe.sh'
+          package: './deploy'
