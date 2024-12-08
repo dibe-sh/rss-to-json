@@ -31,9 +31,8 @@ jobs:
       - name: Build Backend
         run: yarn build
 
-      - name: Copy Dependencies to dist
+      - name: Prepare Deployment Package
         run: |
-          cp -R node_modules dist/
           cp package.json dist/
           cp yarn.lock dist/
 
@@ -68,6 +67,9 @@ jobs:
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
           allow-no-subscriptions: true
+
+      - name: Install Dependencies on Server
+        run: yarn install --production
 
       - name: Deploy to Azure Web App
         uses: azure/webapps-deploy@v2
